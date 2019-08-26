@@ -1,0 +1,112 @@
+//This is the Menu Items model:
+
+import java.io.Serializable;
+
+public class MenuItems implements Serializable {
+
+
+
+	private String itemName;
+
+	private String itemDescription;
+
+  private String itemPrice; 
+
+  private String itemQuantity;
+
+  private String itemCategory;
+	
+	
+	//Getters and Setters 
+	
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public String getItemDescription() {
+		return itemDescription;
+	}
+
+	public void setItemDescription(String itemDescription) {
+		this.itemDescription = itemDescription;
+	}
+
+	public String getItemPrice() {
+		return itemPrice;
+	}
+
+	public void setItemPrice(String itemPrice) {
+		this.itemPrice = itemPrice;
+	}
+
+	public String getItemQuantity() {
+		return itemQuantity;
+	}
+
+	public void setItemQuantity(String itemQuantity) {
+		this.itemQuantity = itemQuantity;
+	}
+
+	public String getItemCategory() {
+		return itemCategory;
+	}
+
+	public void setItemCategory(String itemCategory) {
+		this.itemCategory = itemCategory;
+	}
+	
+}
+
+//This is the Kafka consumer that reads from the Menu topic 
+
+public class KafkaConsumerFromTopic{
+	
+	//Path to the file
+	public final static String filepath = "C:\\Users\\ammar\\Documents\\workspace-spring-tool-suite-4-4.2.0.RELEASE\\newworkspace\\foodResApp-1\\src\\main\\resources\\outputMenu.dat";
+    
+	public void receive(Object obj) {
+		  
+		
+		MenuItems menuItems = new MenuItems(getJson(obj));
+		WriteObjectToFile(menuItems); 
+		
+		
+	  }
+	
+	//Write to the file 
+	public void WriteObjectToFile(Object serObj) {
+		 
+	        try {
+	 
+	            FileOutputStream fileOut = new FileOutputStream(filepath);
+	            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+	            objectOut.writeObject(serObj);
+	            objectOut.close();
+	            System.out.println("The Object  was succesfully written to a file");
+	 
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+
+	  
+	//Get the json object 
+	public static JsonObject getJson(Object obj) {
+
+		Gson gson = new Gson();
+
+		String json = gson.toJson(obj);
+
+		JsonElement jElement = new JsonParser().parse(json);
+
+		JsonObject jobject = jElement.getAsJsonObject();
+
+		return jobject.getAsJsonObject("value");
+
+	}
+	
+	
